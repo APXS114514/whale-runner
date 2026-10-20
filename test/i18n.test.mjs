@@ -17,7 +17,7 @@ export function run() {
     ok('runner document.title', b.doc.title === '小鲸逐浪 · DeepSeek Arcade', b.doc.title);
     ok('runner 返回按钮文案', b.els.back.textContent === '← 返回游戏厅', b.els.back.textContent);
     ok('html lang=zh-CN', b.doc.documentElement.getAttribute('lang') === 'zh-CN');
-    ok('语言按钮显示目标语言', b.els.lang.textContent === '🌐 English', b.els.lang.textContent);
+    ok('语言按钮显示目标语言', b.els.lang.textContent === 'English', b.els.lang.textContent);
     b.tick(3);
     ok('runner 画布中文开场提示', b.log.texts.some((s) => s.indexOf('按 空格 / 点击画面 开始游动') >= 0));
     ok('runner 画布 HI 前缀', b.log.texts.some((s) => s.indexOf('HI 00000') >= 0));
@@ -30,8 +30,8 @@ export function run() {
     ok('runner 英文 document.title', b.doc.title === 'Whale Runner · DeepSeek Arcade', b.doc.title);
     ok('runner 英文返回按钮', b.els.back.textContent === '← Back to Arcade', b.els.back.textContent);
     ok('html lang=en', b.doc.documentElement.getAttribute('lang') === 'en');
-    ok('语言按钮变中文', b.els.lang.textContent === '🌐 中文', b.els.lang.textContent);
-    ok('音效按钮跟着变', b.els.sound.textContent === '🔊 Sound', b.els.sound.textContent);
+    ok('语言按钮变中文', b.els.lang.textContent === '中文', b.els.lang.textContent);
+    ok('音效按钮跟着变', b.els.sound.textContent === 'Sound', b.els.sound.textContent);
     ok('全屏按钮跟着变', b.els.fullscreen.textContent === '⛶ Fullscreen', b.els.fullscreen.textContent);
     ok('选择写入 localStorage(arcade.lang)', b.store.get('arcade.lang') === 'en', String(b.store.get('arcade.lang')));
     b.clearLog(); b.tick(3);

@@ -1,119 +1,559 @@
-/* DeepSeek Arcade 大厅专属样式。
- * 页面外壳（body / .card / .sub / .btn / .arcade-back / 版本角标）与全部设计变量
- * 都在 shared/arcade.css —— 这里只写大厅自己的东西：品牌头、游戏卡网格、缩略图。
+/* ============================================================
+ * DeepSeek Arcade — 大厅（柜机墙）
  *
- * 刻意**没有**复用 shared 的 .head / .controls：那是游戏页的「标题 + 操作按钮」语义，
- * 大厅这里是居中的品牌头部和一排工具按钮，长得像但语义不同，硬套只会变难读。 */
+ * 这一页的底色就是六款游戏画布里的那片深海：页面本身是水，
+ * 六台柜机浮在水上。所以颜色不新造一套品牌色 —— 品牌蓝 #4d6bfe、
+ * 深海 #071224、鲸鱼白，全部从项目自己身上取。
+ *
+ * 结构：顶栏 -> 英雄区（标题 + 一台正在放预告的柜机）-> 柜机清单
+ *       -> 四个概念（全宽四联画）-> 收尾（三联砖）-> 页脚
+ *
+ * 公共外壳（body / .card / .btn / .arcade-back / 版本角标 / 设计变量）
+ * 仍在 shared/arcade.css；这里只覆盖大厅需要的那部分，并把游戏页
+ * 那套「白卡片」在本地换掉。字体只用一套系统无衬线：全站零外部请求，
+ * 而且中英混排（Archivo 这类拉丁展示字体没有 CJK）不该出现两种调性。
+ * ============================================================ */
 
-.hero { display: flex; flex-direction: column; text-align: center; margin: 4px 0 20px; }
+body.is-lobby {
+  /* ---------- 这片海 ---------- */
+  --sea: #071224;            /* 页面底：游戏画布同款深海 */
+  --sea-band: #0b1a30;       /* 清单的交替色带（比底亮一档） */
+  --sea-hover: #12294a;      /* hover 色带 */
+  --bone: #f2f6fc;           /* 主文字：鲸鱼白 */
+  --ink-soft: #a6b9d4;       /* 次级文字（海面上 8.14:1，过 AA） */
+  --ink-dim: #7f95b4;        /* 更弱：只用在数字标签上 */
+  --blue: #4d6bfe;           /* 品牌蓝（= theme-color，测试钉死） */
+  --blue-deep: #465fe8;      /* 白字实心填充专用（白字 5.17:1，过 AA） */
+  --blue-pale: #a3b5ff;      /* 深底上的蓝色文字 / 焦点环（9.18:1） */
+  --paper: #f4f7fc;          /* 柜机面板 / 概念第一格 */
+  --paper-2: #dde7f6;
+  --paper-3: #b9c9ea;
+  --paper-4: #132a52;        /* 概念最后一格：深蓝 */
+  --paper-ink: #0e2340;      /* 纸面上的深墨 */
 
-.brand {
+  /* ---------- 五个字号，只有五个 ---------- */
+  --display: clamp(46px, 6.6vw, 96px);
+  --head: clamp(24px, 2.4vw, 34px);
+  --lead: clamp(18px, 1.6vw, 22px);
+  --body: 17px;
+  --small: 14px;
+
+  --frame: 1240px;
+  --pad: clamp(20px, 3.4vw, 44px);
+  /* 全宽色带里的文字仍然落在页面栅格上：边距随视口变宽而跟上 */
+  --edge: max(var(--pad), calc((100vw - var(--frame)) / 2 + var(--pad)));
+
+  display: block;
+  padding: 0;
+  background: var(--sea);
+  color: var(--bone);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 白卡片外壳在这页不存在：大厅是整页的深海，不是一张纸 */
+.lobby.card {
+  width: 100%;
+  max-width: none;
   margin: 0;
-  font-family: var(--font-mono);
-  font-size: 34px;
-  font-weight: 700;
-  letter-spacing: 5px;
-  color: var(--accent);
-  text-shadow: 3px 3px 0 var(--brand-shadow);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
-.brand-underline {
-  width: 74px;
-  height: 4px;
-  margin: 10px auto 0;
-  background: var(--accent);
-  box-shadow: 12px 0 0 var(--accent), -12px 0 0 var(--accent);
+/* 页面栅格：除全宽画带外，所有内容共用一对左右边距 */
+.bar,
+.hero,
+.shelf,
+.ideas-head,
+.foot {
+  width: 100%;
+  max-width: var(--frame);
+  margin-inline: auto;
+  padding-inline: var(--pad);
 }
 
-.hero .sub { margin-top: var(--space-5); }
+.head {
+  margin: 0;
+  font-size: var(--head);
+  line-height: 1.12;
+  letter-spacing: -.02em;
+  font-weight: 600;
+  color: var(--bone);
+}
 
-/* 顶部工具栏自己占一行（order: -1 提到标题前面）。
- * 以前它是 position: absolute 浮在右上角，标题一长就会被按钮压住 ——
- * 960px 卡片下 "DEEPSEEK ARCADE" 约 381px，三个按钮约 330px，必然重叠。 */
-.hero-lang {
-  order: -1;
+/* ============================================================
+ * 顶栏：字标 + 三个扁平工具按钮
+ * ============================================================ */
+.bar {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  gap: var(--space-3);
-  margin: 0 0 var(--space-4);
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 24px;
+  padding-bottom: 8px;
 }
 
-/* .btn.ghost 的 margin-left:auto 是给 .controls 里「单个靠右按钮」用的，
- * 工具栏里一排按钮再用它就会被拉开成一整行，这里取消掉。 */
-.hero-lang .btn.ghost { margin-left: 0; }
+.mark {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: var(--bone);
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.mark-whale { display: block; width: 28px; height: 21px; image-rendering: pixelated; }
+.mark-text { font-size: var(--small); letter-spacing: .07em; font-weight: 600; color: var(--bone); white-space: nowrap; }
 
-.games { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-6); grid-template-columns: 1fr; }
+.tools { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+
+.tool {
+  margin: 0;
+  padding: 9px 11px;
+  font: inherit;
+  font-size: var(--small);
+  line-height: 1;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.tool:hover { color: var(--bone); background: var(--sea-band); }
+.tool:active { color: var(--bone); }
+
+.tool:focus-visible,
+.cab-tab:focus-visible,
+.go:focus-visible,
+.play:focus-visible,
+.field-link:focus-visible,
+.foot a:focus-visible,
+.mark:focus-visible {
+  outline: 2px solid var(--blue-pale);
+  outline-offset: 3px;
+}
+
+/* ============================================================
+ * 英雄区：左边一句话，右边一台柜机
+ * ============================================================ */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 5.4fr) minmax(0, 6.6fr);
+  gap: clamp(26px, 4vw, 64px);
+  align-items: start;
+  padding-top: clamp(36px, 5vw, 72px);
+  padding-bottom: clamp(40px, 4.6vw, 64px);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--display);
+  line-height: .92;
+  letter-spacing: -.035em;
+  font-weight: 600;
+  color: var(--bone);
+}
+
+.lead {
+  margin: clamp(18px, 2vw, 26px) 0 0;
+  max-width: 23em;
+  font-size: var(--lead);
+  line-height: 1.5;
+  color: var(--bone);
+}
+
+.note { margin: 10px 0 0; font-size: var(--small); line-height: 1.6; color: var(--ink-soft); }
+
+.go {
+  display: inline-flex;
+  align-items: center;
+  min-height: 50px;
+  margin-top: clamp(22px, 2.4vw, 32px);
+  padding: 0 26px;
+  font-size: var(--body);
+  font-weight: 600;
+  color: #fff;
+  background: var(--blue-deep);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--transition), transform var(--transition);
+}
+.go:hover { background: var(--blue); }
+.go:active { transform: translateY(1px); }
+
+/* ---------- 柜机：一块纸面，左上角切一刀 ---------- */
+.cab {
+  position: relative;
+  padding: clamp(16px, 1.9vw, 24px);
+  background: var(--paper);
+  color: var(--paper-ink);
+  clip-path: polygon(0 36px, 36px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.cab-now { margin: 0 0 8px; font-size: var(--small); color: #5a6f8d; }
+
+.cab-screen {
+  position: relative;
+  aspect-ratio: 28 / 15;
+  overflow: hidden;
+  background: var(--deep-line);   /* 画布画出来之前的那一帧，屏幕底色 */
+  isolation: isolate;
+}
+.cab-screen canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  image-rendering: pixelated;
+  transition: opacity .32s ease;
+}
+.cab-screen canvas.is-on { opacity: 1; }
+
+.cab-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+}
+.cab-name {
+  margin: 0;
+  font-size: var(--head);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  font-weight: 600;
+  color: var(--paper-ink);
+  text-wrap: balance;
+}
+.cab-score { margin: 0; font-size: var(--small); color: #5a6f8d; white-space: nowrap; }
+.cab-score b {
+  margin-left: 6px;
+  font-size: var(--lead);
+  font-variant-numeric: tabular-nums;
+  color: var(--paper-ink);
+}
+
+.cab-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 16px; }
+.cab-tab {
+  margin: 0;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: var(--small);
+  line-height: 1;
+  color: #3a4f6b;
+  background: #e2eaf6;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--transition), color var(--transition);
+}
+.cab-tab:hover { background: #d2dff2; }
+.cab-tab.is-on { background: var(--paper-ink); color: var(--paper); }
+
+/* ============================================================
+ * 柜机清单：条目 + 记录 + 开始（交替色带，没有描边）
+ * ============================================================ */
+.shelf { padding-top: clamp(24px, 3vw, 44px); padding-bottom: clamp(24px, 3vw, 40px); }
+
+.games {
+  list-style: none;
+  margin: clamp(24px, 3vw, 40px) 0 0;
+  padding: 0;
+  display: grid;
+}
 
 .game {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) auto auto;
+  grid-template-areas: "name desc hi play";
+  align-items: baseline;
+  gap: 10px clamp(18px, 2.4vw, 36px);
+  margin-inline: -14px;
+  padding: 22px 14px;
+  transition: background var(--transition);
+}
+.game:hover { background: var(--sea-hover); }
+
+.game .name {
+  grid-area: name;
+  margin: 0;
+  font-size: var(--head);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  font-weight: 600;
+  color: var(--bone);
+}
+.game .desc {
+  grid-area: desc;
+  margin: 0;
+  font-size: var(--body);
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+.game .name, .game .desc { min-width: 0; }
+.game .hi {
+  grid-area: hi;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--small);
+  line-height: 1.2;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+.game .hi b {
+  font-size: var(--lead);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--bone);
+}
+
+.play {
+  grid-area: play;
+  font-size: var(--body);
+  color: var(--blue-pale);
+  text-decoration: none;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.play::after { content: " →"; }
+.play:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+
+.more {
+  margin: clamp(20px, 2.4vw, 30px) 0 0;
+  font-size: var(--small);
+  color: var(--ink-dim);
+}
+
+/* ============================================================
+ * 四个概念：全宽四联画，越往右越深
+ * ============================================================ */
+.ideas-head { padding-top: clamp(76px, 9vw, 132px); }
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+  max-width: var(--frame);
+  margin: clamp(24px, 3vw, 40px) auto 0;
+  padding-inline: 0;
+}
+
+.field {
+  --field-pad: clamp(20px, 2.1vw, 30px);
   display: flex;
   flex-direction: column;
-  padding: var(--space-6);
-  background: var(--surface-soft);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-xl);
-  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+  min-height: clamp(430px, 56svh, 620px);
+  padding: var(--field-pad);
+  color: var(--paper-ink);
 }
+.field-a { background: var(--paper); }
+.field-b { background: var(--paper-2); }
+.field-c { background: var(--paper-3); }
+.field-d { background: var(--paper-4); color: var(--bone); }
 
-.game:hover { border-color: var(--accent); box-shadow: var(--shadow-hover); }
-
-.thumb {
-  border-radius: var(--radius);
+.field-media {
+  flex: 0 0 auto;
+  height: clamp(170px, 15.5vw, 225px);
+  margin: calc(-1 * var(--field-pad)) calc(-1 * var(--field-pad)) 0;
   overflow: hidden;
-  background: var(--deep);
-  border: 1px solid var(--deep-line);
 }
-
-.thumb canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; }
-
-.name {
-  margin: var(--space-5) 0 var(--space-1);
-  font-family: var(--font-mono);
-  font-size: 18px;
-  letter-spacing: 1.5px;
-}
-
-.desc { margin: 0; font-size: var(--font-md); color: var(--muted); }
-
-.foot { margin-top: auto; padding-top: var(--space-6); display: flex; align-items: flex-end; gap: var(--space-5); }
-
-.hi { margin: 0; font-size: 11px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
-.hi b {
+.field-media img {
   display: block;
-  margin-top: 2px;
-  font-family: var(--font-mono);
-  font-size: var(--font-2xl);
-  color: var(--accent);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left top;
+  image-rendering: pixelated;
 }
 
-.foot .play { margin-left: auto; min-width: 108px; }
+.field-name {
+  margin: clamp(22px, 2.4vw, 34px) 0 0;
+  font-size: var(--head);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  font-weight: 600;
+}
+.field-text {
+  margin: 10px 0 0;
+  font-size: var(--body);
+  line-height: 1.6;
+  max-width: 22em;
+}
+.field-d .field-text { color: #d7e2f4; }
 
+.field-link {
+  margin-top: auto;
+  padding-top: clamp(18px, 2vw, 28px);
+  display: inline-flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: var(--body);
+  color: inherit;
+  text-decoration: none;
+}
+.field-link span:last-child { opacity: .72; }
+.field-link::after { content: "→"; opacity: .72; }
+.field-link:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-/* 五款游戏之后的那句“以后再说”，不做成假卡片 */
-.more-note {
-  margin: var(--space-7) 0 0;
-  text-align: center;
-  font-size: var(--font-sm);
-  letter-spacing: 1px;
-  color: var(--muted);
+/* 唯一一处缓慢移动的画面：被审的那段回答在轻轻呼吸 */
+.field-d .field-media img { animation: drift 20s ease-in-out infinite alternate; }
+
+/* ============================================================
+ * 收尾：三联砖，中间那块是真的能按的
+ * ============================================================ */
+.close {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-top: clamp(56px, 7vw, 104px);
 }
 
-.lobby-foot { margin: var(--space-8) 0 0; font-size: var(--font-sm); line-height: 1.7; color: var(--muted); text-align: center; }
+.close-strip { display: block; overflow: hidden; background: #bfe0fb; }
+.close-strip img,
+.close-video { display: block; width: 100%; height: auto; image-rendering: pixelated; }
 
-@media (min-width: 760px) {
-  .games { grid-template-columns: 1fr 1fr; gap: var(--space-7); }
+.close-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(34px, 5vw, 72px) var(--edge);
+  background: var(--blue-deep);
+  color: #fff;
+}
+.close-main .head { color: #fff; max-width: 16em; }
+.close-text { margin: 14px 0 0; max-width: 38em; font-size: var(--body); line-height: 1.6; color: #eef3ff; }
+.lobby .go-on-blue { margin-top: 26px; background: var(--paper); color: var(--paper-ink); }
+.lobby .go-on-blue:hover { background: #fff; }
+
+/* ============================================================
+ * 页脚：一句话、一个链接、一年
+ * ============================================================ */
+.foot {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px 24px;
+  padding-top: clamp(36px, 4vw, 56px);
+  padding-bottom: 40px;
+  font-size: var(--small);
+  color: var(--ink-soft);
+}
+.foot-line { margin: 0; }
+.foot-links { margin: 0; text-align: center; }
+.foot-year { margin: 0; text-align: right; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+.foot a { color: var(--bone); text-decoration: none; }
+.foot a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* 版本角标跟着这页换一身深色（公共层仍留给游戏页） */
+.is-lobby .arcade-version {
+  font-size: 13px;
+  color: var(--ink-soft);
+  background: rgba(7, 18, 36, .78);
+  border: 0;
 }
 
-/* 大厅卡片的 hover 过渡同样尊重「减少动态效果」 */
-@media (prefers-reduced-motion: reduce) {
-  .game { transition: none; }
+/* ============================================================
+ * 动效：入场、柜机快门、控件反馈
+ * 元素默认是可见的；只有 JS 打上 .in 时才播放一次入场，
+ * 所以脚本挂了也不会把内容藏起来。
+ * ============================================================ */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes shutter {
+  from { clip-path: inset(0 0 0 100%); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+@keyframes settle {
+  from { transform: scale(1.1); }
+  to   { transform: scale(1); }
+}
+@keyframes drift {
+  from { transform: scale(1); }
+  to   { transform: scale(1.045); }
+}
+
+.hero-copy > *, .hero .cab { animation: rise .6s cubic-bezier(.22, .61, .36, 1) both; }
+.hero-copy > *:nth-child(2) { animation-delay: .06s; }
+.hero-copy > *:nth-child(3) { animation-delay: .12s; }
+.hero-copy > *:nth-child(4) { animation-delay: .18s; }
+.hero .cab { animation: rise .6s .12s cubic-bezier(.22, .61, .36, 1) both, shutter .9s .1s cubic-bezier(.22, .61, .36, 1) both; }
+.cab-screen canvas.is-on { animation: settle 1.2s .25s cubic-bezier(.22, .61, .36, 1) both; }
+
+[data-rise].in { animation: rise .65s cubic-bezier(.22, .61, .36, 1) both; }
+
+/* ============================================================
+ * 窄屏：柜机先放预告，清单变成两列，四联画与三联砖竖起来
+ * ============================================================ */
+@media (max-width: 1080px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .cab { max-width: 720px; }
+  .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .field { min-height: 0; }
+  .field-link { margin-top: clamp(18px, 2vw, 26px); }
+  .close { grid-template-columns: 1fr; }
+  .close-tile { min-height: 220px; }
+  .close-main { min-height: 0; padding-block: clamp(32px, 6vw, 56px); }
+  .close-flat { min-height: 96px; }
 }
 
 @media (max-width: 720px) {
-  .brand { font-size: 24px; letter-spacing: 3px; }
-  .brand-underline { width: 56px; margin-top: var(--space-3); }
-  .hero { margin-bottom: var(--space-6); }
-  .hero-lang { margin-bottom: var(--space-3); }
-  .hero-lang .btn { flex: 1 1 0; width: auto; }
-  .foot .play { min-width: 96px; }
+  .bar { padding-top: max(18px, env(safe-area-inset-top, 0px)); flex-wrap: wrap; gap: 4px 10px; }
+  .tools { width: 100%; justify-content: flex-start; margin-top: 2px; }
+  .mark { gap: 7px; }
+  .mark-text { font-size: 13px; letter-spacing: .02em; }
+  .tools { gap: 0; }
+  .tool { padding: 8px 7px; font-size: 13px; }
+
+  .hero {
+    padding-top: 26px;
+    padding-bottom: 44px;
+  }
+  .title { letter-spacing: -.03em; }
+  .cab {
+    margin-inline: calc(-1 * var(--pad));
+    padding: 16px var(--pad);
+    clip-path: polygon(0 26px, 26px 0, 100% 0, 100% 100%, 0 100%);
+  }
+  .cab-name { font-size: var(--lead); }
+  .cab-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+  .cab-tab { padding: 10px 8px; font-size: 13px; text-align: center; }
+
+  .game {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "name name"
+      "desc desc"
+      "hi   play";
+    gap: 6px 16px;
+    margin-inline: 0;
+    padding: 18px 0;
+  }
+  .game .hi b { font-size: var(--body); }
+  .game .desc { font-size: var(--body); }
+
+  .fields { grid-template-columns: 1fr; padding-inline: var(--pad); }
+  .field { padding: 22px; }
+  .field-media { max-width: 100%; }
+
+  .foot { grid-template-columns: 1fr; gap: 8px; }
+  .foot-links { text-align: left; }
+  .foot-year { text-align: left; }
+}
+
+/* 减少动态效果：只删位移，不藏内容 */
+@media (prefers-reduced-motion: reduce) {
+  .hero-copy > *, .hero .cab, .cab-screen canvas.is-on,
+  [data-rise].in, .field-d .field-media img {
+    animation: none !important;
+  }
+  .cab-screen canvas, .cab-tab, .go, .tool { transition: none !important; }
 }

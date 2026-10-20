@@ -120,19 +120,19 @@ export function run() {
   {
     /* 按钮文案：中英都要对 */
     const b = harness({ page: 'lobby', navLang: 'zh-CN' });
-    ok('大厅角色按钮默认文案', b.els.skin.textContent === '🐳 经典鲸鱼', b.els.skin.textContent);
+    ok('大厅角色按钮默认文案', b.els.skin.textContent === '经典鲸鱼', b.els.skin.textContent);
     b.els.skin.fire('click');
-    ok('第一次点击 -> 鲸鱼娘', b.els.skin.textContent === '🐳 鲸鱼娘', b.els.skin.textContent);
+    ok('第一次点击 -> 鲸鱼娘', b.els.skin.textContent === '鲸鱼娘', b.els.skin.textContent);
     b.els.skin.fire('click');
-    ok('第二次点击 -> 回到经典鲸鱼', b.els.skin.textContent === '🐳 经典鲸鱼', b.els.skin.textContent);
+    ok('第二次点击 -> 回到经典鲸鱼', b.els.skin.textContent === '经典鲸鱼', b.els.skin.textContent);
     ok('按钮带 aria-label（可访问性）', (b.els.skin.getAttribute('aria-label') || '').length > 0,
       b.els.skin.getAttribute('aria-label'));
     b.els.lang.fire('click');
-    ok('切英文后按钮文案同步', b.els.skin.textContent === '🐳 Classic Whale', b.els.skin.textContent);
+    ok('切英文后按钮文案同步', b.els.skin.textContent === 'Classic Whale', b.els.skin.textContent);
     b.els.skin.fire('click');
-    ok('英文下点击 -> Whale Girl', b.els.skin.textContent === '🐳 Whale Girl', b.els.skin.textContent);
+    ok('英文下点击 -> Whale Girl', b.els.skin.textContent === 'Whale Girl', b.els.skin.textContent);
     b.els.skin.fire('click');
-    ok('英文下再点一次 -> 回到 Classic Whale', b.els.skin.textContent === '🐳 Classic Whale', b.els.skin.textContent);
+    ok('英文下再点一次 -> 回到 Classic Whale', b.els.skin.textContent === 'Classic Whale', b.els.skin.textContent);
   }
   {
     const b = harness({ page: 'lobby', navLang: 'zh-CN' });

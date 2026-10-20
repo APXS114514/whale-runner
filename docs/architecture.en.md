@@ -23,7 +23,7 @@ for the test story see [docs/testing.en.md](testing.en.md).
 | --- | --- |
 | `shared/i18n.js` | The single dictionary (zh / en) plus language detection and switching (`arcade.lang`, with legacy `whaleRunner.lang` support). Pages use `data-i18n` attributes or `I18N.t('key')`; canvas text goes through `I18N.t` too, so switching language never needs a reload. |
 | `shared/audio.js` | Web Audio helpers **and the global Sound switch**. `ArcadeAudio.tone({...})` synthesises tones on the fly (no audio files); `isEnabled(legacyKey)` / `setEnabled(on)` / `toggle()` read and write `arcade.sound`, and `tone()` stays silent while muted. |
-| `shared/whale.js` | The **single copy** of the DeepSeek whale pixel art: `NORMAL_A` / `NORMAL_B` (24×18 swim frames), `DIVE_A` / `DIVE_B` (24×13 dive frames) plus `width / height / mirror / rotate` helpers. Whale Runner, Token Fall and the lobby previews all read it. |
+| `shared/whale.js` | The **single copy** of the DeepSeek whale pixel art: `NORMAL_A` / `NORMAL_B` (24×18 swim frames), `DIVE_A` / `DIVE_B` (24×13 dive frames) plus `width / height / mirror / rotate` helpers. Whale Runner, Token Fall and the lobby cabinet's attract screen all read it. |
 | `shared/character.js` | The global character-skin registry **Classic Whale / Whale Girl**: reads, validates and migrates `arcade.characterSkin`, lazily loads and caches the WebP files per skin, derives animation frames from elapsed time, broadcasts `onChange`, and exposes `draw()`, which returns `false` when it cannot draw so the caller can fall back to the classic whale. Games only speak semantic states — never asset filenames. |
 
 **Sound precedence (decided on first read)**: `arcade.sound` > the current game's own legacy key (`whaleRunner.sound` /

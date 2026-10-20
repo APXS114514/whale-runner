@@ -534,3 +534,136 @@
     });
   }
 })();
+/* ============================================================
+ * 大厅柜机选择器 + 入场
+ * 六张预览画布叠在同一块屏幕里，点下面的柜机按钮换一台；
+ * 换的时候标题、记录、主按钮一起跟着走。没有 JS 时：
+ * 第一台照常显示，六个按钮仍是链接以外的纯按钮（不导航），
+ * 清单里的六个「开始游戏」链接永远可用。
+ * ============================================================ */
+(function () {
+  'use strict';
+
+  var tabs = document.getElementById('cab-tabs');
+  if (!tabs) return;
+
+  var CANVAS = {
+    runner: 'preview-runner', snake: 'preview-snake', tokenfall: 'preview-tokenfall',
+    maze: 'preview-maze', breaker: 'preview-breaker', hunt: 'preview-hunt'
+  };
+  var I18N = window.I18N || null;
+  var byKey = {};
+  var rows = document.querySelectorAll('[data-game]');
+  for (var r = 0; r < rows.length; r++) {
+    byKey[rows[r].getAttribute('data-game')] = rows[r];
+  }
+
+  var nameEl = document.getElementById('cab-name');
+  var bestEl = document.getElementById('cab-best');
+  var heroGo = document.getElementById('hero-go');
+  var buttons = tabs.querySelectorAll('[data-cab]');
+  var active = 'runner';
+
+  function paint(key) {
+    if (!CANVAS[key]) return;
+    active = key;
+
+    for (var i = 0; i < buttons.length; i++) {
+      var on = buttons[i].getAttribute('data-cab') === key;
+      buttons[i].classList.toggle('is-on', on);
+      buttons[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+
+    for (var c in CANVAS) {
+      if (!Object.prototype.hasOwnProperty.call(CANVAS, c)) continue;
+      var cv = document.getElementById(CANVAS[c]);
+      if (cv) cv.classList.toggle('is-on', c === key);
+    }
+
+    var row = byKey[key];
+    if (!row) return;
+    if (nameEl) {
+      var nameKey = row.getAttribute('data-name');
+      nameEl.removeAttribute('data-i18n');
+      nameEl.textContent = (I18N && I18N.t && nameKey) ? I18N.t(nameKey) : nameEl.textContent;
+    }
+    if (bestEl) {
+      var score = row.querySelector('[data-highscore]');
+      bestEl.textContent = score ? score.textContent : '—';
+    }
+    if (heroGo) heroGo.setAttribute('href', row.getAttribute('data-path') || heroGo.getAttribute('href'));
+    tabs.setAttribute('data-active', key);
+  }
+
+  function nearest(delta) {
+    var list = [];
+    for (var i = 0; i < buttons.length; i++) list.push(buttons[i].getAttribute('data-cab'));
+    var at = list.indexOf(active);
+    if (at < 0) at = 0;
+    return list[(at + delta + list.length) % list.length];
+  }
+
+  tabs.addEventListener('click', function (e) {
+    var t = e.target;
+    while (t && t !== tabs && !t.getAttribute('data-cab')) t = t.parentNode;
+    if (t && t !== tabs) paint(t.getAttribute('data-cab'));
+  });
+
+  tabs.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      var key = nearest(e.key === 'ArrowRight' ? 1 : -1);
+      paint(key);
+      for (var i = 0; i < buttons.length; i++) {
+        if (buttons[i].getAttribute('data-cab') === key) { buttons[i].focus(); break; }
+      }
+    }
+  });
+
+  if (I18N && I18N.onChange) {
+    I18N.onChange(function () { paint(active); });
+  }
+
+  paint(active);
+})();
+
+/* 入场：进入视口才播一次上浮，元素默认就是可见的（没 JS 也不会藏内容） */
+(function () {
+  'use strict';
+
+  /* 收尾那条海面是真实录制的 Whale Runner；系统要求减少动态效果时停在封面上 */
+  var loop = document.querySelector ? document.querySelector('.close-video') : null;
+  var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (loop && still) {
+    try { loop.removeAttribute('autoplay'); loop.pause(); } catch (e) {}
+  }
+
+  if (!window.IntersectionObserver) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var nodes = document.querySelectorAll('[data-rise]');
+  if (!nodes.length) return;
+
+  var seen = [];
+  function nth(el) {
+    var parent = el.parentNode;
+    for (var i = 0; i < seen.length; i++) {
+      if (seen[i].parent === parent) return ++seen[i].n;
+    }
+    seen.push({ parent: parent, n: 0 });
+    return 0;
+  }
+
+  var io = new IntersectionObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (!entries[i].isIntersecting) continue;
+      entries[i].target.classList.add('in');
+      io.unobserve(entries[i].target);
+    }
+  }, { rootMargin: '0px 0px -7% 0px', threshold: 0.1 });
+
+  for (var i = 0; i < nodes.length; i++) {
+    nodes[i].style.animationDelay = (nth(nodes[i]) * 0.07).toFixed(2) + 's';
+    io.observe(nodes[i]);
+  }
+})();

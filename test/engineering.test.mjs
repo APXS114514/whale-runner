@@ -6,8 +6,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { harness, source, ROOT } from './helpers.mjs';
 
-const SOUND_LABEL = '🔊 音效';
-const MUTED_LABEL = '🔇 静音';
+const SOUND_LABEL = '音效';
+const MUTED_LABEL = '静音';
 const GAME_PAGES = ['runner', 'snake', 'tokenfall', 'attentionmaze', 'contextbreaker', 'hunt'];
 const LEGACY = {
   runner: 'whaleRunner.sound',
@@ -159,12 +159,12 @@ export function run() {
     /* 语言切换后按钮文字仍然正确 */
     const b = soundPage('snake');
     b.els.lang.fire('click');
-    ok('切英文后音效按钮文案变成 Sound', b.els.sound.textContent === '🔊 Sound', b.els.sound.textContent);
+    ok('切英文后音效按钮文案变成 Sound', b.els.sound.textContent === 'Sound', b.els.sound.textContent);
     b.els.sound.fire('click');
-    ok('切英文后静音文案也对', b.els.sound.textContent === '🔇 Muted', b.els.sound.textContent);
+    ok('切英文后静音文案也对', b.els.sound.textContent === 'Muted', b.els.sound.textContent);
     const lobby = harness({ page: 'lobby' });
     lobby.els.lang.fire('click');
-    ok('大厅音效按钮也跟着语言变', lobby.els.sound.textContent === '🔊 Sound', lobby.els.sound.textContent);
+    ok('大厅音效按钮也跟着语言变', lobby.els.sound.textContent === 'Sound', lobby.els.sound.textContent);
   }
 
   /* ================= C. 共享鲸鱼素材 ================= */
@@ -351,8 +351,8 @@ export function run() {
       !fs.existsSync(path.join(ROOT, GONE.dir)));
     ok('没有素材再使用的像素皮肤 MIT 全文已删除',
       !fs.existsSync(path.join(ROOT, 'LICENSES/' + GONE.licence)));
-    ok('LICENSES/ 里只剩真有素材在用的许可',
-      fs.readdirSync(path.join(ROOT, 'LICENSES')).join(',') === 'YUNYUE-WHALE-PET-LICENSE.txt',
+    ok('LICENSES/ 里只剩真有素材在用的许可（鲸鱼娘素材 + Archivo 字体）',
+      fs.readdirSync(path.join(ROOT, 'LICENSES')).sort().join(',') === 'Archivo-OFL.txt,YUNYUE-WHALE-PET-LICENSE.txt',
       fs.readdirSync(path.join(ROOT, 'LICENSES')).join(','));
     ok('运行时 / i18n 里不再有 pixel 皮肤',
       source('shared/character.js').indexOf('pixel') < 0 &&

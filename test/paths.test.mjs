@@ -112,8 +112,8 @@ export function run() {
      !fs.existsSync(path.join(ROOT, 'LICENSES/CC-BY-4.0.txt')));
   ok('没有素材再使用的像素皮肤 MIT 全文已被删除（不留无引用 License）',
      !fs.existsSync(path.join(ROOT, 'LICENSES/CHEN' + 'THREEGOLD-WHALE-PET-MIT.txt')));
-  ok('LICENSES/ 里剩下的都是真有素材在用的许可',
-     fs.readdirSync(path.join(ROOT, 'LICENSES')).sort().join(',') === 'YUNYUE-WHALE-PET-LICENSE.txt',
+  ok('LICENSES/ 里剩下的都是真有素材在用的许可（鲸鱼娘素材 + Archivo 字体）',
+     fs.readdirSync(path.join(ROOT, 'LICENSES')).sort().join(',') === 'Archivo-OFL.txt,YUNYUE-WHALE-PET-LICENSE.txt',
      fs.readdirSync(path.join(ROOT, 'LICENSES')).join(','));
 
   const chb = harness({ page: 'runner' });

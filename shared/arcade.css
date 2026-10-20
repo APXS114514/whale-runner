@@ -13,13 +13,23 @@
  * 变量卫生由 test/engineering.test.mjs 守卫：:root 里不允许留下没人引用的 token。
  * ============================================================ */
 
+/* Archivo（SIL Open Font License 1.1，见 LICENSES/Archivo-OFL.txt）
+ * 只带拉丁子集（34KB，随仓库走，零外部请求）；中文按字符回落到系统黑体。
+ * 放在 --font-sans 首位，六个游戏页也一起用同一套字。 */
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../assets/fonts/archivo-latin.woff2") format("woff2");
+}
+
 :root {
   /* ---------- 颜色：公共产品 UI ---------- */
   --page-bg: #e8f2fb;            /* 页面底色 */
   --card-bg: #ffffff;            /* 卡片 / 面板 / 浮起的白色面 */
   --surface: #f2f7fc;            /* 次级面：按钮默认底 */
   --surface-hover: #e8f0f8;      /* 次级面 hover */
-  --surface-soft: #fbfdff;       /* 更靠近白的面：大厅卡片底 */
   --text: #16324f;               /* 主文字 */
   --muted: #5a7183;              /* 次要文字（对比度：白底 5.09:1 / #f2f7fc 底 4.72:1，都过 WCAG AA） */
   --text-accent: #46618a;        /* 强调文字：比 muted 深、比 text 浅 */
@@ -32,7 +42,6 @@
    * 所以只给这一类实心填充开一支更深的蓝：白字 5.17:1，过 AA。 */
   --accent-fill: #465fe8;
   --accent-ghost: #f4f8ff;       /* hover 时的极淡蓝面 */
-  --brand-shadow: rgba(77, 107, 254, 0.16);   /* 品牌字的实心投影 */
   --deep: #08152c;               /* 深海蓝：贪吃蛇场地、缩略图底、大厅深色块 */
   --deep-line: #16305c;          /* 深色面上的描边 */
   --focus-ring: var(--accent);   /* 键盘焦点环颜色 */
@@ -41,7 +50,6 @@
   --radius-sm: 8px;
   --radius: 10px;
   --radius-lg: 12px;
-  --radius-xl: 14px;
   --radius-2xl: 18px;
   --radius-pill: 999px;
 
@@ -60,9 +68,8 @@
   --space-10: 24px;
 
   /* ---------- 排版 ---------- */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+  --font-sans: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
                "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  --font-mono: "Courier New", ui-monospace, monospace;   /* 街机/终端味的展示字体 */
   --font-sm: 12px;
   --font-md: 13px;
   --font-lg: 15px;
@@ -71,7 +78,6 @@
 
   /* ---------- 阴影 / 过渡 ---------- */
   --shadow: 0 12px 34px rgba(20, 55, 100, 0.13);
-  --shadow-hover: 0 8px 22px rgba(77, 107, 254, 0.14);
   --transition: .15s ease;
 }
 

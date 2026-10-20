@@ -268,11 +268,11 @@ for (const [page, , sels] of PAGES) {
 {
   await openPage('lobby', 'desktop-1280x900');
   const cards = await evalJs("document.querySelectorAll('.game').length");
-  check('Lobby 正好六张 game card', cards === 6, '实际 ' + cards);
-  const playable = await evalJs("Array.from(document.querySelectorAll('.game')).filter(function (c) { return c.querySelector('a.btn.primary'); }).length");
-  check('六张卡片都有可点的「开始游戏」入口', playable === 6, '实际 ' + playable);
-  const thumbs = await evalJs("Array.from(document.querySelectorAll('.thumb canvas, .thumb img')).filter(function (c) { const r = c.getBoundingClientRect(); return r.width > 0 && r.height > 0; }).length");
-  check('六张卡片的缩略图都有实际尺寸', thumbs === 6, '实际 ' + thumbs);
+  check('Lobby 正好六台柜机（六行清单）', cards === 6, '实际 ' + cards);
+  const playable = await evalJs("Array.from(document.querySelectorAll('.game')).filter(function (c) { const a = c.querySelector('a.play'); return a && /^games\\//.test(a.getAttribute('href') || ''); }).length");
+  check('六台柜机都有可点的「开始游戏」入口', playable === 6, '实际 ' + playable);
+  const thumbs = await evalJs("Array.from(document.querySelectorAll('.cab-screen canvas')).filter(function (c) { const r = c.getBoundingClientRect(); return r.width > 0 && r.height > 0; }).length");
+  check('六台柜机的预告画面都有实际尺寸', thumbs === 6, '实际 ' + thumbs);
 }
 
 /* ---------------- 7. 多机型：无横向溢出 + 横屏不破版 ---------------- */
@@ -408,11 +408,11 @@ const KEY_M = () => key('m', 'KeyM', 77, 'm');
 /* 9.3 primary action 用的是 --accent-fill 而不是品牌蓝 */
 {
   await openPage('lobby', 'mobile-390x844');
-  const bg = await evalJs("getComputedStyle(document.querySelector('.btn.primary')).backgroundColor");
-  check('primary 按钮的实心底色是 #465fe8（--accent-fill，白字过 AA）而不是品牌蓝 #4d6bfe',
+  const bg = await evalJs("getComputedStyle(document.querySelector('.go')).backgroundColor");
+  check('主行动按钮的实心底色是 #465fe8（--accent-fill，白字过 AA）而不是品牌蓝 #4d6bfe',
     bg === 'rgb(70, 95, 232)', '实际 ' + bg);
-  const brand = await evalJs("getComputedStyle(document.querySelector('.brand')).color");
-  check('品牌字仍然是品牌蓝 #4d6bfe（没有被 accent-fill 带偏）', brand === 'rgb(77, 107, 254)', '实际 ' + brand);
+  const brand = await evalJs("getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()");
+  check('品牌蓝 --accent 仍然是 #4d6bfe（没有被 accent-fill 带偏）', brand === '#4d6bfe', '实际 ' + brand);
 }
 /* 9.4 真按 Tab：键盘焦点环必须真的出现 */
 {
@@ -428,7 +428,7 @@ const KEY_M = () => key('m', 'KeyM', 77, 'm');
   }
   check('真按 Tab：焦点环在浏览器里真的出现（solid 2px 品牌蓝）',
     !!ring && ring.style === 'solid' && parseFloat(ring.width) >= 2, ring ? JSON.stringify(ring) : '没找到 focus-visible 元素');
-  if (!ring) await diagnose('lobby', 'desktop-1280x900', ['.btn']);
+  if (!ring) await diagnose('lobby', 'desktop-1280x900', ['.go']);
 }
 
 /* ---------------- 10. 收尾 ---------------- */

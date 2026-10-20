@@ -22,7 +22,7 @@
 | --- | --- |
 | `shared/i18n.js` | 全站唯一词典（中 / 英）+ 语言检测与切换（`arcade.lang`，兼容旧的 `whaleRunner.lang`）。页面用 `data-i18n` 属性或 `I18N.t('key')`；Canvas 里的文字也走 `I18N.t`，语言切换无需刷新。 |
 | `shared/audio.js` | Web Audio 音效工具 + **全站统一 Sound 开关**。`ArcadeAudio.tone({...})` 现场合成音色（不引用任何音频文件）；`isEnabled(legacyKey)` / `setEnabled(on)` / `toggle()` 读写 `arcade.sound`，`audio.js` 在静音时 `tone()` 直接静默。 |
-| `shared/whale.js` | DeepSeek 小鲸鱼的**唯一一份**像素素材：`NORMAL_A` / `NORMAL_B`（24×18 游动两帧）、`DIVE_A` / `DIVE_B`（24×13 下潜两帧），外加 `width / height / mirror / rotate` 小工具。Whale Runner、Token Fall、大厅卡片预览都读它。 |
+| `shared/whale.js` | DeepSeek 小鲸鱼的**唯一一份**像素素材：`NORMAL_A` / `NORMAL_B`（24×18 游动两帧）、`DIVE_A` / `DIVE_B`（24×13 下潜两帧），外加 `width / height / mirror / rotate` 小工具。Whale Runner、Token Fall、大厅柜机的预告画面都读它。 |
 | `shared/character.js` | 全站角色皮肤注册表 **Classic Whale / Whale Girl**：读写并迁移 `arcade.characterSkin`、懒加载 + 缓存 WebP、按时间算动画帧、`onChange` 广播、以及 `draw()`（画不出来返回 `false`，调用方回退经典小鲸鱼）。游戏只说语义状态，不接触素材文件名。 |
 
 **Sound 优先级（第一次读取时确定）**：`arcade.sound` > 当前游戏自己的旧 key（`whaleRunner.sound` /
@@ -613,7 +613,7 @@ intro → streaming → scanning → verifying → result → (streaming | gameO
 │   ├── audio.js                          Web Audio 音色 + 全站统一 Sound 开关
 │   ├── character.js                      角色皮肤注册表（两套皮肤）+ 懒加载 / 动画时钟 / 回退
 │   ├── whale.js                          DeepSeek 小鲸鱼像素素材（唯一一份）
-│   └── arcade.css                        设计变量 + 页面外壳（body / 卡片 / 按钮 / 返回入口）
+│   └── arcade.css                        设计变量 + 游戏页外壳（body / 卡片 / 按钮 / 返回入口）
 ├── games/
 │   ├── runner/                           Whale Runner：index.html / style.css / game.js
 │   ├── snake/                            Context Snake：index.html / style.css / game.js
@@ -635,6 +635,8 @@ intro → streaming → scanning → verifying → result → (streaming | gameO
 │   ├── i18n.test.mjs                     七个页面的中英切换 + 词典完整性
 │   └── paths.test.mjs                    死链 / 绝对路径 / localStorage key 冲突
 ├── assets/favicon.png                     全站 favicon（所有页面统一引用，带 ?v= 版本）
+├── assets/fonts/archivo-latin.woff2      Archivo 拉丁子集（OFL-1.1，随仓库走，零外部请求）
+├── assets/lobby/                          大厅柜机素材：鲸鱼字标 / 四张概念截图 / 真实游玩录屏（webm）
 ├── assets/whale-yunyue/                  鲸鱼娘运行时素材（19 张派生 WebP）+ ATTRIBUTION.md
 ├── tools/derive-character-assets.py      角色素材派生脚本（dev-only，运行时不用）
 ├── tools/bump-asset-version.mjs          同步所有 HTML 的 ?v= 版本参数（dev-only）

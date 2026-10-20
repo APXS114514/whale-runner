@@ -49,7 +49,19 @@ license the community reference art under `design/` — none of it is used here.
 [`assets/whale-yunyue/ATTRIBUTION.md`](assets/whale-yunyue/ATTRIBUTION.md) for the
 exact source files, the upstream commit and the list of modifications.
 
-## 3. DeepSeek name, logo and brand assets
+## 3. Archivo typeface — SIL Open Font License 1.1
+
+| | |
+| --- | --- |
+| **Asset** | [`assets/fonts/archivo-latin.woff2`](assets/fonts/archivo-latin.woff2) (Latin subset, 35KB) |
+| **Source** | <https://fonts.google.com/specimen/Archivo> · <https://github.com/Omnibus-Type/Archivo> |
+| **Licence** | **SIL Open Font License 1.1** — see [`LICENSES/Archivo-OFL.txt`](LICENSES/Archivo-OFL.txt) |
+| **Modifications** | none; the upstream Latin subset is served as-is from the repository (no external request at runtime) |
+
+Archivo is used as the site's one typeface for Latin text; Chinese characters fall
+back to the system CJK sans (PingFang SC / Microsoft YaHei / Noto Sans CJK).
+
+## 4. DeepSeek name, logo and brand assets
 
 "DeepSeek", the DeepSeek logo and any related names, graphics and brand assets are
 **not** part of any license here and remain the property of their respective
@@ -74,5 +86,8 @@ author endorses DeepSeek Arcade.
 - 仓库里只保存**派生过的 WebP**（挑帧 / 裁切 / 去毛边 / 等比缩放 / 底部对齐 /
   重新编码），不重新分发上游原始图集；每个素材的来源、上游 commit 与改动都记在
   `assets/whale-yunyue/ATTRIBUTION.md` 里。
+- **字体**：Archivo（`assets/fonts/archivo-latin.woff2`，拉丁子集）采用
+  **SIL Open Font License 1.1**，全文见 `LICENSES/Archivo-OFL.txt`；
+  中文字符仍回落到系统黑体。
 - **DeepSeek 名称与 Logo** 不属于上述任何授权，权利归各自权利人所有；
   本项目为非官方同人作品。

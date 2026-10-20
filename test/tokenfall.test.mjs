@@ -544,7 +544,7 @@ export function run() {
     b.els.sound.fire('click');
     ok('静音写入全站统一的 arcade.sound', b.store.get('arcade.sound') === 'off', String(b.store.get('arcade.sound')));
     ok('不再单独写自己的旧 key', !b.store.has('arcade.tokenFall.sound'));
-    ok('静音按钮文案变化', b.els.sound.textContent === '🔇 静音', b.els.sound.textContent);
+    ok('静音按钮文案变化', b.els.sound.textContent === '静音', b.els.sound.textContent);
     ok('没有碰 Whale Runner 的静音 key', !b.store.has('whaleRunner.sound'));
     ok('没有碰 Context Snake 的静音 key', !b.store.has('arcade.snake.sound'));
     ok('静音后操作不报错', b.errors.length === 0, b.errors[0]);

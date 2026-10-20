@@ -63,9 +63,9 @@ export function run() {
     ok('暂停提示', b.log.texts.some((s) => s.indexOf('已暂停') >= 0));
     b.key('keydown', 'p', 'KeyP'); b.tick(3);
     b.key('keydown', 'm', 'KeyM'); b.tick(3);
-    ok('静音按钮文案', b.els.sound.textContent === '🔇 静音', b.els.sound.textContent);
+    ok('静音按钮文案', b.els.sound.textContent === '静音', b.els.sound.textContent);
     b.key('keydown', 'm', 'KeyM'); b.tick(3);
-    ok('恢复音效文案', b.els.sound.textContent === '🔊 音效', b.els.sound.textContent);
+    ok('恢复音效文案', b.els.sound.textContent === '音效', b.els.sound.textContent);
     b.doc.hidden = true; b.fireDoc('visibilitychange'); b.tick(3);
     ok('切走自动暂停', b.log.texts.some((s) => s.indexOf('已暂停') >= 0));
     b.doc.hidden = false; b.fireDoc('visibilitychange');
